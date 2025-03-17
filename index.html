@@ -11,26 +11,105 @@
     <p id="nfcOutput">Warte auf Scan...</p>
 
     <script>
-        document.getElementById("scanNFC").addEventListener("click", async () => {
-            if ("NDEFReader" in window) {
-                try {
-                    const reader = new NDEFReader();
-                    await reader.scan();
-                    reader.onreading = (event) => {
-                        const decoder = new TextDecoder();
-                        let tagData = "";
-                        for (const record of event.message.records) {
-                            tagData += decoder.decode(record.data) + "<br>";
-                        }
-                        document.getElementById("nfcOutput").innerHTML = "NFC UID: " + tagData;
-                    };
-                } catch (error) {
-                    document.getElementById("nfcOutput").innerHTML = "Fehler: " + error;
-                }
-            } else {
-                alert("WebNFC wird nicht unterstützt!");
+        var reader; 
+        var abortController = new AbortController();
+        //const READ_TIMEOUT = 60_000;
+        utf8decoder = new TextDecoder('utf8');
+
+        function bufferToString(b) {
+            var Int8Buffer = new Uint8Array(b);
+            var retVal = '';
+            for(var i=0;i<Int8Buffer.length;++i)
+            {
+                retVal += (" " + Int8Buffer[i].toString(16).padStart(2,'0'));
             }
-        });
+            return retVal;
+        }
+
+        function setup() 
+        {
+            if (! ('NDEFReader' in window))  {
+                //This device doesn't have NFC capabilities.
+                document.getElementById('scanButton').disabled = true;                
+                document.getElementById('stopScanButton').disabled = true;
+                document.getElementById('lastError').innerText = "Sorry, this app only works on devices capable of reading NFC"
+
+            }
+           reader = new NDEFReader();
+
+           reader.onreadingerror = (e) => {
+                console.error(e);
+           }
+           reader.onreading = (e) => {
+            var rootResultElement = document.getElementById("scanResult");                
+            rootResultElement.innerText = "";
+
+            var showSerialNumberChecked = document.getElementById('showSerialNumber').checked;
+            if(showSerialNumberChecked) {
+                var serialNumberElement = document.createElement('div');
+                serialNumberElement.class = 'serialNumber';
+                serialNumberElement.innerText = e.serialNumber;
+                rootResultElement.appendChild(serialNumberElement)                    ;
+            }
+
+            for(var i=0;i<e.message.records.length;++i)
+            {
+                var record = e.message.records[i];
+                var envelopeElement = document.createElement('div')
+                envelopeElement.className = 'ndfmessage';
+                
+                var typeText = document.createElement('div');
+                typeText.className = 'recordType'                    
+                typeText.innerText = record.recordType;
+
+                var dataElement = document.createElement('div');
+                dataElement.className = 'ndefdata'
+                dataElement.innerText = bufferToString(record.data.buffer);
+                var dataTextElement = document.createElement('div');
+                dataTextElement.innerText = utf8decoder.decode(record.data.buffer);
+                envelopeElement.appendChild(typeText);
+                envelopeElement.appendChild(dataElement);
+                envelopeElement.appendChild(dataTextElement);
+                rootResultElement.appendChild(envelopeElement);
+            }
+           }
+
+           reader.onreadingerror = (e) => {
+                var lastError = document.getElementById('lastError');
+                lastError.innerText = e.toString();
+           }
+        }
+
+        function scanTag() {
+            reader.scan({signal: abortController.signal})
+            .then(()=>{})
+            .catch((e)=>{
+                if(!e) {
+                    return;
+                }
+                if(e.isError) {
+                    console.error(e);
+                } else {
+                    if(e.reasonText) {
+                    console.info(e.reasonText);
+                    }
+                }
+            })
+            //abortScanHandle.timeout(READ_TIMEOUT)
+            document.getElementById('scanButton').disabled = true;
+            document.getElementById('stopScanButton').disabled = false;
+        }
+
+        function abortScan() {
+            document.getElementById('scanButton').disabled = false;                
+            document.getElementById('stopScanButton').disabled = true;
+            abortController.abort({isError:false, reasonText:"user requested scan termination"});
+
+        }
+
+        window.onload = () => {
+            setup();
+        }
     </script>
 </body>
 </html>

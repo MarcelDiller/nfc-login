@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFC Login</title>
+</head>
+<body>
+    <h2>NFC-Login</h2>
+    <button id="scanNFC">NFC scannen</button>
+    <p id="nfcOutput">Warte auf Scan...</p>
+
+    <script>
+        document.getElementById("scanNFC").addEventListener("click", async () => {
+            if ("NDEFReader" in window) {
+                try {
+                    const reader = new NDEFReader();
+                    await reader.scan();
+                    reader.onreading = (event) => {
+                        const decoder = new TextDecoder();
+                        let tagData = "";
+                        for (const record of event.message.records) {
+                            tagData += decoder.decode(record.data) + "<br>";
+                        }
+                        document.getElementById("nfcOutput").innerHTML = "NFC UID: " + tagData;
+                    };
+                } catch (error) {
+                    document.getElementById("nfcOutput").innerHTML = "Fehler: " + error;
+                }
+            } else {
+                alert("WebNFC wird nicht unterstützt!");
+            }
+        });
+    </script>
+</body>
+</html>

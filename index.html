@@ -22,7 +22,7 @@
                             let rawData = decoder.decode(event.message.records[0].data);
                             try{
                                 let JsonData = JSON.parse(rawData);
-                                document.getElementById("ausgabe").innerText=`Name: ${jsonData.name}\nMitarbeiter-NR: ${jsonData.mitarbeiter_nr}`;
+                                document.getElementById("ausgabe").innerText=`Name: ${jsonData.name}\nmitarbeiter-NR: ${jsonData.mitarbeiter_nr}`;
                             }catch(error){
                                 document.getElementById("ausgabe").innerText = "Ungültige Daten auf dem NFC-Tag!";
                             }

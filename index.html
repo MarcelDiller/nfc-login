@@ -4,18 +4,33 @@
     </head>
     <body>
         <h1>NFC Lesen</h1>
-        <button id="scanButton">Scan</button>
+        <button id="scanButton">Lesen</button>
+        <button id="writeButton">Schreiben</button>
         <p id="ausgabe"></p>
         <script>
+            document.getElementById("writeButton").addEventListener("click", async()=>{
+                if("NDEFReader" in window){
+                    try{
+                        const ndef = new NDEFReader();
+                        await ndef.write(JSON.stringify({
+                            name: "Max Mustermann",
+                            mitarbeiter_nr: "123456"
+                        }));
+                    }
+                    catch(error){
+                        document.getElementById("ausgabe").innerText = "Fehler" + error;
+                    }
+                }
+                else {
+                    document.getElementById("ausgabe").innerText = "NFC reader NICHT vorhanden";
+                }
+            });
+
             document.getElementById("scanButton").addEventListener("click", async () => {
                 if("NDEFReader" in window){
                     try{
                         const ndef = new NDEFReader();
                         await ndef.scan();
-                        /*await ndef.write(JSON.stringify({
-                            name: "Max Mustermann",
-                            mitarbeiter_nr: "123456"
-                        }));*/
                         ndef.onreading = event =>{
                             const decoder = new TextDecoder();
                             let text = "NFC-Daten: ";

@@ -4,10 +4,25 @@
     </head>
     <body>
         <h1>NFC Lesen</h1>
-        <button id="scanButton">Lesen</button>
-        <button id="writeButton">Schreiben</button>
+        <button id="scanButton">Lesen</button><br>
+        <button id="writeButton">Schreiben</button><br>
+        <button id="clearButton">Löschen</button><br>
         <p id="ausgabe"></p>
         <script>
+            document.getElementById("clearButton").addEventListener("click", async () => {
+                if ("NDEFReader" in window) {
+                    try {
+                        const ndef = new NDEFReader();
+                        await ndef.write("");  // Schreibt einen leeren String auf den Chip
+                        alert("NFC-Chip erfolgreich geleert!");
+                    } catch (error) {
+                        alert("Fehler beim Löschen: " + error);
+                    }
+                } else {
+                    alert("WebNFC wird nicht unterstützt!");
+                }
+            });
+
             document.getElementById("writeButton").addEventListener("click", async()=>{
                 if("NDEFReader" in window){
                     try{

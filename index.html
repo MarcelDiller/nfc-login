@@ -13,8 +13,13 @@
                         const ndef = new NDEFReader();
                         await ndef.scan();
                         ndef.onreading = event =>{
-                        document.getElementById("ausgabe").innerText = "NFC chip gelesen";
-                        };
+                            const decoder = new TextDecoder();
+                            let text = "NFC-Daten: ";
+                            for (const record of event.message.records) {
+                                text += decoder.decode(record.data) + "\n";
+                            }
+                            document.getElementById("message").innerText = text;
+                            };
                     }
                     catch(error){
                         document.getElementById("ausgabe").innerText = "Fehler" + error;

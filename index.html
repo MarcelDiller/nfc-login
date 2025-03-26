@@ -14,7 +14,7 @@
                         await ndef.scan();
                         ndef.onreading = event =>{
                             const decoder = new TextDecoder();
-                            let text = "NFC-Daten: ";
+                            text = "NFC-Daten: ";
                             for (const record of event.message.records) {
                                 text += decoder.decode(record.data) + "\n";
                             }

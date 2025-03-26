@@ -9,7 +9,16 @@
         <script>
             document.getElementById("scanButton").addEventListener("click", async () => {
                 if("NDEFReader" in window){
-                    document.getElementById("ausgabe").innerText = "NFC reader vorhanden";
+                    try{
+                        const ndef = new NDEFReader();
+                        await ndef.scan();
+                        ndef.onreading = event =>{
+                        document.getElementById("ausgabe").innerText = "NFC chip gelesen";
+                        };
+                    }
+                    catch(error){
+                        document.getElementById("ausgabe").innerText = "Fehler" + error;
+                    }
                 }
                 else {
                     document.getElementById("ausgabe").innerText = "NFC reader NICHT vorhanden";

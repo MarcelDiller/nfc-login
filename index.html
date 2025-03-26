@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <title>NFC Scanner</title>
+    </head>
+    <body>
+        <h1>NFC Lesen</h1>
+        <button id="scanButton">Scan</button>
+        <p id="ausgabe"></p>
+        <script>
+            document.getElementById("scanButton").addEventListener("click", async () => {
+                if("NDEFREADER" in window){
+                    document.getElementById("ausgabe").innerText = "NFC reader vorhanden";
+                }
+                else {
+                    document.getElementById("ausgabe").innerText = "NFC reader NICHT vorhanden";
+                }
+            });
+        </script>
+    </body>
+</html>

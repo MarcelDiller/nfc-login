@@ -12,17 +12,17 @@
                     try{
                         const ndef = new NDEFReader();
                         await ndef.scan();
-                        await ndef.write(JSON.stringify({
+                        /*await ndef.write(JSON.stringify({
                             name: "Max Mustermann",
                             mitarbeiter_nr: "123456"
-                        }));
+                        }));*/
                         ndef.onreading = event =>{
                             const decoder = new TextDecoder();
                             let text = "NFC-Daten: ";
                             let rawData = decoder.decode(event.message.records[0].data);
                             try{
                                 let JsonData = JSON.parse(rawData);
-                                document.getElementById("ausgabe").innerText='Name: ${jsonData.name}\nMitarbeiter-NR: ${jsonData.mitarbeiter_nr}';
+                                document.getElementById("ausgabe").innerText=`Name: ${jsonData.name}\nMitarbeiter-NR: ${jsonData.mitarbeiter_nr}`;
                             }catch(error){
                                 document.getElementById("ausgabe").innerText = "Ungültige Daten auf dem NFC-Tag!";
                             }

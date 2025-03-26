@@ -14,11 +14,14 @@
                         await ndef.scan();
                         ndef.onreading = event =>{
                             const decoder = new TextDecoder();
-                            text = "NFC-Daten: ";
-                            for (const record of event.message.records) {
-                                text += decoder.decode(record.data) + "\n";
+                            let text = "NFC-Daten: ";
+                            let rawData = decoder.decode(event.message.records[0].data);
+                            try{
+                                let JsonData = JSON.parse(rawData);
+                                document.getElementById("ausgabe").innerText='Name: ${jsonData.name}\nMitarbeiter-NR: ${jsonData.Mitarbeiter_nr}';
+                            }catch(error){
+                                document.getElementById("ausgabe").innerText = "Ungültige Daten auf dem NFC-Tag!";
                             }
-                            document.getElementById("ausgabe").innerText = text;
                             };
                     }
                     catch(error){

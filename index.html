@@ -29,7 +29,8 @@
                         const ndef = new NDEFReader();
                         await ndef.write(JSON.stringify({
                             name: "Max Mustermann",
-                            mitarbeiter_nr: "1150"
+                            mitarbeiter_nr: "1150",
+                            status: "Arbeiter" 
                         }));
                     }
                     catch(error){
@@ -70,3 +71,4 @@
     </body>
 
 </html>
+
